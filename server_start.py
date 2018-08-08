@@ -10,7 +10,7 @@ app = Flask(__name__)
 # 初回はこちらにアクセス
 @app.route('/')
 def index():
-    return render_template('index.html', line=locate_list)
+    return render_template('index.html', line=locate_list, title='HOHOHO')
 
 # /post にアクセスしたときの処理（2回目以降はこちら）
 @app.route('/post', methods=['GET', 'POST'])
@@ -19,7 +19,7 @@ def post():
     if request.method == 'POST':
         point_inf = request.form['point_inf']
         locate_list = reversi.put_koma(locate_list, point_inf)
-        return render_template('index.html', line= locate_list)
+        return render_template('index.html', line= locate_list, title='hogehoge')
     else:
         return redirect(url_for('index'))
 

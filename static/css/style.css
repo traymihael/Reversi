@@ -1,0 +1,22 @@
+.title{font-size:20px;
+    color:red;
+}
+
+.form{
+    background: dimgray;
+}
+
+body{
+    background: aqua;
+}
+
+.image_head{
+    position: absolute;
+    left: 50%;
+    background: black;
+}
+
+.koma_picture{
+    width: 200px;
+    height: 200px;
+}
