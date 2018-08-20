@@ -17,6 +17,16 @@ body{
 }
 
 .koma_picture{
-    width: 200px;
-    height: 200px;
+    width: 40px;
+    height: 40px;
+}
+
+.judge_picture{
+    width: 150px;
+    height: 150px;
+}
+
+.undo_picture{
+    width: 100px;
+    height: 100px;
 }

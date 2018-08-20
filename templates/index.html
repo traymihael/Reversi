@@ -7,28 +7,80 @@
     <img src="static/image/othello_head.jpeg">
   </div>
 
-  <form action="/post" method="post">
-    <label for="name" class="title">どこにうちますか？</label> <br >
-    <input type="text" class="form-control" id="point_inf" name="point_inf" placeholder="ex)a 1 B(or W)">
-    <button type="submit" class="btn btn-default">うつ</button>
-  </form>
-  <br ><br ><br >
+  <!--<form action="/post" method="post">-->
+    <!--<label for="name" class="title">どこにうちますか？</label> <br >-->
+    <!--<input type="text" class="form-control" id="point_inf" name="point_inf" placeholder="ex)a 1 B(or W)">-->
+    <!--<button type="submit" class="btn btn-default">うつ</button>-->
+  <!--</form>-->
+  <!--<br ><br ><br >-->
 
-  [/]&nbsp;[a][b][c]&nbsp;[d][e][f&nbsp;][g&nbsp;][h]<br >
-  [1]&nbsp;{{' '.join(line[0])}} <br >
-  [2]&nbsp;{{' '.join(line[1])}} <br >
-  [3]&nbsp;{{' '.join(line[2])}} <br >
-  [4]&nbsp;{{' '.join(line[3])}} <br >
-  [5]&nbsp;{{' '.join(line[4])}} <br >
-  [6]&nbsp;{{' '.join(line[5])}} <br >
-  [7]&nbsp;{{' '.join(line[6])}} <br >
-  [8]&nbsp;{{' '.join(line[7])}} <br >
+  <!--[/]&nbsp;[a][b][c]&nbsp;[d][e][f&nbsp;][g&nbsp;][h]<br >-->
+  <!--[1]&nbsp;{{' '.join(line[0])}} <br >-->
+  <!--[2]&nbsp;{{' '.join(line[1])}} <br >-->
+  <!--[3]&nbsp;{{' '.join(line[2])}} <br >-->
+  <!--[4]&nbsp;{{' '.join(line[3])}} <br >-->
+  <!--[5]&nbsp;{{' '.join(line[4])}} <br >-->
+  <!--[6]&nbsp;{{' '.join(line[5])}} <br >-->
+  <!--[7]&nbsp;{{' '.join(line[6])}} <br >-->
+  <!--[8]&nbsp;{{' '.join(line[7])}} <br >-->
 
 
-    <form action="/post" method="post">
-      <input type="image" class="koma_picture" src="static/image/black.png">
-      <input type="image" class="koma_picture" src="static/image/white.png">
+    <!--<form action="/post" method="post">-->
+      <!--<input type="image" class="koma_picture" src="static/image/black.png">-->
+      <!--<input type="image" class="koma_picture" src="static/image/white.png">-->
+    <!--</form>-->
+
+  <!--[/]&nbsp;[a][b][c][d][e][f ][g ][h] <p></p>-->
+  {% for i in width %}
+    <form action="/post" method="get">
+      {% for j in width %}
+        {% if line[i][j] == 'b' %}
+          <input type="image" class="koma_picture" src="static/image/black.png" name="get_value" value='already'>
+        {% endif %}
+        {% if line[i][j] == 'w' %}
+          <input type="image" class="koma_picture" src="static/image/white.png" name="get_value" value='already'>
+        {% endif %}
+        {% if line[i][j] == '-' %}
+            <input type="image" class="koma_picture" src="static/image/blank.png" name="get_value" value={{position_data[i][j]}}>
+        {% endif %}
+
+        <!--{{ line[i][j] }}-->
+      {% endfor %}
     </form>
+
+    <!--<P></P>-->
+  {% endfor %}
+
+
+  <br><br>
+  <!--{% if judge == 'start' %}-->
+    <!--<input type="image" name="name" value="004" class="koma_picture" src="static/image/black.png">-->
+  <!--{% endif %}-->
+  <!--{% if turn == 'w' %}-->
+    <!--<input type="image" class="koma_picture" src="static/image/white.png">-->
+  <!--{% endif %}-->
+  <input type="image" class="judge_picture" src="static/image/{{judge}}.png">
+
+  <br><br>
+  next turn is
+  {% if turn == 'b' %}
+    <input type="image" name="name" value="004" class="koma_picture" src="static/image/black.png">
+  {% endif %}
+  {% if turn == 'w' %}
+    <input type="image" class="koma_picture" src="static/image/white.png">
+  {% endif %}
+  <br><br>
+
+  if you want to undo, press
+  <form action="/undo" method="get">
+    <input type="image" class="undo_picture" src="static/image/undo.png">
+  </form>
+
+  if you want to restart, press
+  <form action="/restart" method="get">
+    <input type="image" class="undo_picture" src="static/image/restart.png">
+  </form>
+
 
 </div>
 {% endblock %}
