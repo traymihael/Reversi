@@ -32,7 +32,7 @@
 
   <!--[/]&nbsp;[a][b][c][d][e][f ][g ][h] <p></p>-->
   {% for i in width %}
-    <form action="/vs_people_play" method="get">
+    <form action="/vs_cp_play_next" method="get">
       {% for j in width %}
         {% if line[i][j] == 'b' %}
           <input type="image" class="koma_picture" src="static/image/black.png" name="get_value" value='already'>
@@ -72,12 +72,12 @@
   <br><br>
 
   if you want to undo, press
-  <form action="/vs_people_undo" method="get">
+  <form action="/vs_cp_undo" method="get">
     <input type="image" class="undo_picture" src="static/image/undo.png">
   </form>
 
   if you want to restart, press
-  <form action="/vs_people_restart" method="get">
+  <form action="/vs_cp_restart" method="get">
     <input type="image" class="undo_picture" src="static/image/restart.png">
   </form>
 

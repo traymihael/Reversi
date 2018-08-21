@@ -1,3 +1,6 @@
+import random
+import copy
+
 def get_initial_place():
     initial_place = [['-' for i in range(8)] for j in range(8)]
     initial_place[3][3] = 'w'
@@ -115,8 +118,7 @@ def check(locate_list, location, turn):
             locate_now_posi = [locate_now_posi[0] + direc[0], locate_now_posi[1] + direc[1]]
 
         if len(reversi_locate) != 0:
-            check_flg = 1
-            break
+            check_flg += 1
 
     return check_flg
 
@@ -128,11 +130,7 @@ def check_next(locate_list, turn):
                 continue
             location = '{}_{}'.format(i, j)
             if check(locate_list, location, turn):
-                next_flg = 1
-                break
-        if next_flg:
-            break
-
+                next_flg += 1
     return next_flg
 
 
@@ -140,6 +138,44 @@ def check_next(locate_list, turn):
 def print_data(locate_list):
     for i in range(len(locate_list)):
         print(locate_list[i])
+
+def where_put(locate_list_now, turn):
+    min_put = 64
+    location_put = ''
+
+    if turn == 'b':
+        next_turn = 'w'
+    else:
+        next_turn = 'b'
+
+    for i in range(8):
+        for j in range(8):
+            if locate_list_now[i][j] != '-':
+                continue
+            location = '{}_{}'.format(i, j)
+            locate_list_kari = copy.deepcopy(locate_list_now)
+
+            if check(locate_list_kari, location, turn) == 0:
+                continue
+
+            locate_list_kari = change_bord(locate_list_kari, location, turn)
+            next_put = check_next(locate_list_kari, next_turn)
+
+            # for k in range(len(locate_list_kari)):
+            #     print(locate_list[k])
+            # print()
+
+            if next_put < min_put:
+                min_put = next_put
+                location_put = location
+            elif next_put == min_put:
+                if random.randrange(2) == 0:
+                    min_put = next_put
+                    location_put = location
+
+
+    return location_put
+
 
 if __name__ == '__main__':
     locate_list = get_initial_place()
