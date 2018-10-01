@@ -55,6 +55,8 @@ def vs_cp_play_next():
     if judge not in judge_list:
         while 1:
             location = reversi.where_put(locate_list, cp_turn)
+            # location = reversi.where_put_full_search(locate_list, cp_turn)
+
             locate_list = reversi.change_bord(locate_list, location, cp_turn)
             history = reversi.get_hist(history, location, cp_turn)
             judge = 'ok'
@@ -150,7 +152,7 @@ if __name__ == '__main__':
     # コマ情報を保持
     locate_list = reversi.get_initial_place()
     position_data = reversi.get_position()
-    width = [_ for _ in range(8)]
+    width = [_ for _ in range(6)]
     history = []
     turn = 'b'
     cp_turn = 'w'
