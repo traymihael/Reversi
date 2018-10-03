@@ -1,9 +1,9 @@
 import random
 import copy
 
-boad_width = 6
+boad_width = 4
 # この個数以下になったら全探索
-full_search = 11
+full_search = 13
 
 count_full = 0
 
@@ -29,16 +29,19 @@ def get_position():
             position_data[-1].append('{}_{}'.format(i, j))
     return position_data
 
+def change_turn(turn):
+    if turn == 'b':
+        return 'w'
+    else:
+        return 'b'
+
+
 def change_bord(locate_list, location, turn):
     everywhere = [[1, 1],[1, 0],[0, 1],[-1, 1],[-1, 0],[1, -1],[0, -1],[-1, -1]]
     location = list(map(int, location.split('_')))
 
     locate_list = put_koma(locate_list, location[0], location[1], turn)
-
-    if turn == 'b':
-        turn_rev = 'w'
-    else:
-        turn_rev = 'b'
+    turn_rev = change_turn(turn)
 
     for i in range(len(everywhere)):
         direc = everywhere[i]
@@ -71,11 +74,6 @@ def change_bord(locate_list, location, turn):
 
     return locate_list
 
-def change_turn(turn):
-    if turn == 'b':
-        return 'w'
-    else:
-        return 'b'
 
 def get_hist(history, location, turn):
     data = '{}_{}'.format(location, turn)
@@ -94,11 +92,7 @@ def check(locate_list, location, turn):
     everywhere = [[1, 1], [1, 0], [0, 1], [-1, 1], [-1, 0], [1, -1], [0, -1], [-1, -1]]
     location = list(map(int, location.split('_')))
     check_flg = 0
-
-    if turn == 'b':
-        turn_rev = 'w'
-    else:
-        turn_rev = 'b'
+    turn_rev = change_turn(turn)
 
     for i in range(len(everywhere)):
         direc = everywhere[i]
@@ -150,7 +144,6 @@ def print_data(locate_list):
 
 def get_place_candidate(locate_list_now, turn):
     place_candidate = []
-    fin_flg = 0
     for i in range(boad_width):
         for j in range(boad_width):
             if locate_list_now[i][j] != '-':
@@ -160,47 +153,63 @@ def get_place_candidate(locate_list_now, turn):
             if check(locate_list_now, location, turn) == 0:
                 continue
             place_candidate.append(location)
-    if len(place_candidate) == 0:
-        fin_flg = 1
 
-    return place_candidate, fin_flg
+    return place_candidate
 
-def where_put_full_search_while(locate_list_now, place_candidate, turn, cp_turn):
+def where_put_full_search_while(locate_list_now, turn, cp_turn):
     global count_full
-    if turn == 'b':
-        next_turn = 'w'
-    else:
-        next_turn = 'b'
-    result_list = {}
+    next_turn = change_turn(turn)
+    result_list = []
+    # if cp_turn != 'w':
+    #     print(cp_turn)
+
+    place_candidate = get_place_candidate(locate_list_now, turn)
 
     for i in range(len(place_candidate)):
         location = place_candidate[i]
         locate_list_kari = copy.deepcopy(locate_list_now)
         locate_list_kari = change_bord(locate_list_kari, location, turn)
 
-        place_candidate_next, fin_flg = get_place_candidate(locate_list_kari, next_turn)
+        place_candidate_next = get_place_candidate(locate_list_kari, next_turn)
 
 
-        if fin_flg:
-            score = get_final_data(locate_list_kari, cp_turn)
-            result_list[score] = location
+        if len(place_candidate_next) == 0:
+            place_candidate_next_next = get_place_candidate(locate_list_kari, turn)
+            if len(place_candidate_next_next) == 0:
+                score = get_final_data(locate_list_kari, cp_turn)
+                # result_list.append(score)
+            else:
+                # print('uuuu')
+                score = where_put_full_search_while(locate_list_kari, turn, cp_turn)
+
         else:
-            score, location = where_put_full_search_while(locate_list_kari, place_candidate_next, next_turn, cp_turn)
-            result_list[score] = location
-
-    if turn == cp_turn:
-        result_list = sorted(result_list.items(), key=lambda x: -x[0])
-        score, location = result_list[0][0], result_list[0][1]
+            score = where_put_full_search_while(locate_list_kari, next_turn, cp_turn)
+        
+        result_list.append(score)
+    # print(result_list)
+    if len(result_list) == 0:
+        result_list.append(get_final_data(locate_list_now, cp_turn))
     else:
-        result_list = sorted(result_list.items(), key=lambda x: x[0])
-        score, location = result_list[0][0], result_list[0][1]
-
+        result_list = sorted(result_list)
+    if turn == cp_turn:
+        # result_list = sorted(result_list.items(), key=lambda x: -x[0])
+        # score, location = result_list[0][0], result_list[0][1]
+        score_final = result_list[-1]
+    else:
+        # result_list = sorted(result_list.items(), key=lambda x: x[0])
+        # score, location = result_list[0][0], result_list[0][1]
+        # try:
+        score_final = result_list[0]
+        # except:
+        #     print(result_list)
+        #     print(place_candidate)
+        #     a = input()
 
     count_full += 1
-    if count_full % 1000 == 0:
+    if count_full % 10000 == 0:
         print(count_full)
 
-    return score, location
+    return score_final
 
 
 
@@ -217,63 +226,94 @@ def get_final_data(locate_list, cp_turn):
     else:
         return white - black
 
-
+# 全探索する最強アルゴリズム
 def where_put_full_search(locate_list_now, turn):
-    cp_turn = copy.deepcopy(locate_list_now)
+    cp_turn = copy.deepcopy(turn)
+    place_candidate = get_place_candidate(locate_list_now, turn)
 
-    place_candidate, fin_flg = get_place_candidate(locate_list_now, turn)
+    # print(place_candidate)
 
-    if fin_flg:
-        return location_put
+    # if len(place_candidate) == 0:
+    #     return location_put
 
-    score, location_put = where_put_full_search_while(locate_list_now, place_candidate, turn, cp_turn)
-    print('final is ',location_put, score)
+    result_list = {}
+    next_turn = change_turn(turn)
+
+    for i in range(len(place_candidate)):
+        location = place_candidate[i]
+        locate_list_kari = copy.deepcopy(locate_list_now)
+        locate_list_kari = change_bord(locate_list_kari, location, turn)
+
+        score = where_put_full_search_while(locate_list_kari, next_turn, cp_turn)
+        result_list[score] = place_candidate[i]
+        
 
 
-    return location_put
+        # if len(place_candidate_next) == 0:
+        #     score = get_final_data(locate_list_kari, cp_turn)
+        #     result_list[score] = place_candidate[i]
+        # else:
+        #     score, location = where_put_full_search_while(locate_list_kari, place_candidate_next, next_turn, cp_turn)
+        #     result_list[score] = place_candidate[i]
 
+    # if turn == cp_turn:
+    #     result_list = sorted(result_list.items(), key=lambda x: -x[0])
+    #     score, location = result_list[0][0], result_list[0][1]
+    # else:
+    #     result_list = sorted(result_list.items(), key=lambda x: x[0])
+    #     score, location = result_list[0][0], result_list[0][1]
+    
+
+    result_list = sorted(result_list.items(), key=lambda x: -x[0])
+    print(result_list)
+    score, location = result_list[0][0], result_list[0][1]
+
+    print('final is ', score, location)
+
+    return location
 
 def where_put(locate_list_now, turn):
     count_okeru = 0
-
     for i in range(boad_width):
         count_okeru += locate_list_now[i].count('-')
 
     if count_okeru <= full_search:
         location_put = where_put_full_search(locate_list_now, turn)
     else:
-        min_put = 64
-        location_put = ''
+        location_put = where_put_storategy1(locate_list_now, turn)
 
-        if turn == 'b':
-            next_turn = 'w'
-        else:
-            next_turn = 'b'
+    return location_put
 
-        for i in range(boad_width):
-            for j in range(boad_width):
-                if locate_list_now[i][j] != '-':
-                    continue
-                location = '{}_{}'.format(i, j)
-                locate_list_kari = copy.deepcopy(locate_list_now)
+# 次の相手のターンで置ける場所が最も少なくなるように
+def where_put_storategy1(locate_list_now, turn):
+    min_put = boad_width * boad_width
+    location_put = ''
+    next_turn = change_turn(turn)
 
-                if check(locate_list_kari, location, turn) == 0:
-                    continue
+    for i in range(boad_width):
+        for j in range(boad_width):
+            if locate_list_now[i][j] != '-':
+                continue
+            location = '{}_{}'.format(i, j)
+            locate_list_kari = copy.deepcopy(locate_list_now)
 
-                locate_list_kari = change_bord(locate_list_kari, location, turn)
-                next_put = check_next(locate_list_kari, next_turn)
+            if check(locate_list_kari, location, turn) == 0:
+                continue
 
-                # for k in range(len(locate_list_kari)):
-                #     print(locate_list[k])
-                # print()
+            locate_list_kari = change_bord(locate_list_kari, location, turn)
+            next_put = check_next(locate_list_kari, next_turn)
 
-                if next_put < min_put:
+            # for k in range(len(locate_list_kari)):
+            #     print(locate_list[k])
+            # print()
+
+            if next_put < min_put:
+                min_put = next_put
+                location_put = location
+            elif next_put == min_put:
+                if random.randrange(2) == 0:
                     min_put = next_put
                     location_put = location
-                elif next_put == min_put:
-                    if random.randrange(2) == 0:
-                        min_put = next_put
-                        location_put = location
     return location_put
 
 if __name__ == '__main__':

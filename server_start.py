@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 import numpy as np
 import reversi
-
+import time
 
 app = Flask(__name__)
 
@@ -31,6 +31,9 @@ def vs_cp_play():
     return render_template('vs_cp.html', line=locate_list, title=title,
                            width=width, position_data=position_data, turn=turn, judge=judge)
 
+
+
+
 @app.route('/vs_cp_play_next')
 def vs_cp_play_next():
     global locate_list, turn, history, cp_turn, judge
@@ -53,6 +56,11 @@ def vs_cp_play_next():
 
     judge_list = ['finish', 'pass', 'ng']
     if judge not in judge_list:
+
+        # render_template('vs_cp.html', line=locate_list, title=title,
+        #                 width=width, position_data=position_data, turn=turn, judge=judge)
+        # time.sleep(3)
+
         while 1:
             location = reversi.where_put(locate_list, cp_turn)
             # location = reversi.where_put_full_search(locate_list, cp_turn)
@@ -152,7 +160,7 @@ if __name__ == '__main__':
     # コマ情報を保持
     locate_list = reversi.get_initial_place()
     position_data = reversi.get_position()
-    width = [_ for _ in range(6)]
+    width = [_ for _ in range(4)]
     history = []
     turn = 'b'
     cp_turn = 'w'
